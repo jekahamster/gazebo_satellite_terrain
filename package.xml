@@ -4,7 +4,7 @@
   <name>gazebo_satellite_terrain</name>
   <version>1.0.0</version>
   <description>ROS2 package for creating satellite terrain in Gazebo</description>
-  <maintainer email="sebastianbitsch@protonmail.com">sebastianbitsch</maintainer>
+  <maintainer email="jekahamster@gmail.com">jekahamster</maintainer>
   <license>GNU GPLv3</license>
 
   <export>

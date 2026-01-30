@@ -5,6 +5,12 @@ This whole project is an exercise in Gazebo and ROS2 quirks which is why the cod
 
 ![demo of gazebo view](.github/media/demo.png)
 
+### Environment 
+- Ubuntu 24.04 / 22.04
+- ROS Jazzy / Humble
+- Gazebo Harmonic
+- Python 3.12
+
 ### Installation
 Package only tested on Mac M1 using [RoboStack](https://robostack.github.io) and on Ubuntu 24.04.
 
@@ -17,10 +23,32 @@ Package only tested on Mac M1 using [RoboStack](https://robostack.github.io) and
     ```
 
 **Instructions**
-1. Go to [MapBox](https://www.mapbox.com).
-2. Open [StyleEditor](https://console.mapbox.com/studio/) and create custom style.
-3. Create `.env` file with keys `MAPBOX_APIKEY`, `MAPBOX_USERNAME`, `MAPBOX_STYLENAME`.
-4. TODO ...
+- Install repo:  
+    ```
+    mkdir -p ros2_ws/src
+    cd ros2_ws/src
+    git clone git@github.com:jekahamster/gazebo_satellite_terrain.git
+    cd ~/ros2_ws
+    colcon build --symlink-install --packages-select gazebo_satellite_terrain
+    ```
+- Go to [MapBox](https://www.mapbox.com).
+- Open [StyleEditor](https://console.mapbox.com/studio/) and create custom style.
+- Create `.env` file with keys `MAPBOX_APIKEY`, `MAPBOX_USERNAME`, `MAPBOX_STYLENAME`.
+- Install models for world from [Gazebo](https://github.com/arpg/Gazebo) repo:
+    ```
+    cd ~/Projects
+    git clone https://github.com/arpg/Gazebo.git
+    export GZ_SIM_RESOURCE_PATH=$GZ_SIM_RESOURCE_PATH:~/Projects/Gazebo/models
+    ```
+- Install gazebo ros:
+    ```
+    sudo apt install ros-jazzy-ros-gz
+    ```
+    Check that everything installed correct 
+    ```
+    gz sim 
+    gz sim -r /home/dev/ros2_ws/src/gazebo_satellite_terrain/worlds/empty.world
+    ```
 
 **Usage**
 - To launch the simulation:
