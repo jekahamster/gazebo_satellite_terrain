@@ -17,9 +17,10 @@ Package only tested on Mac M1 using [RoboStack](https://robostack.github.io) and
     ```
 
 **Instructions**
-1. TODO
-2. ...
-3. ...
+1. Go to [MapBox](https://www.mapbox.com).
+2. Open [StyleEditor](https://console.mapbox.com/studio/) and create custom style.
+3. Create `.env` file with keys `MAPBOX_APIKEY`, `MAPBOX_USERNAME`, `MAPBOX_STYLENAME`.
+4. TODO ...
 
 **Usage**
 - To launch the simulation:
