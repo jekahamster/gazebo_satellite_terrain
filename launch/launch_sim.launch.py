@@ -35,7 +35,7 @@ def generate_launch_description():
             {'use_sim_time': True}
         ],
         arguments = [
-            '--odom_topic'      , '/odom',
+            '--odom_topic'      , str(config.odom_topic),
             '--approx_world_lat', str(config.approx_origin_lat),
             '--approx_world_lon', str(config.approx_origin_lon),
             '--zoom'            , str(config.zoom),

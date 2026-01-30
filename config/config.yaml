@@ -1,5 +1,6 @@
 package_name: 'gazebo_satellite_terrain'
 
+odom_topic: /odom
 zoom: 18                                # Open street map zoom level, see: https://wiki.openstreetmap.org/wiki/Zoom_levels
 approx_origin_lat: 55.74664268169444    # north-south (y-axis in gazebo). Only approximate, as we will round it to center of nearest tile
 approx_origin_lon: 12.556765912443149   # east-west   (x-axis in gazebo). Only approximate, as we will round it to center of nearest tile
