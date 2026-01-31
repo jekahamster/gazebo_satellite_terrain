@@ -8,7 +8,7 @@
           <plane>
             <normal>0 0 1</normal>
             <!-- Will be overwritten by `spawn_tile.py` -->
-            <size>86.04527351190444 86.04527351190444</size>
+            <size>86.0452735119044 86.0452735119044</size>
           </plane>
         </geometry>
         <surface>
@@ -26,7 +26,7 @@
           <plane>
             <normal>0 0 1</normal>
             <!-- Will be overwritten by `spawn_tile.py` -->
-            <size>86.04527351190444 86.04527351190444</size>
+            <size>86.0452735119044 86.0452735119044</size>
           </plane>
         </geometry>
         <material>
@@ -34,7 +34,7 @@
                 <uri>model://satellite_tile/materials/scripts</uri>
                 <uri>model://satellite_tile/materials/textures</uri>
                 <!-- Will be overwritten by `spawn_tile.py` -->
-                <name>tile_140214_81959</name> 
+                <name>tile_140215_81956</name> 
             </script>
         </material>
       </visual>

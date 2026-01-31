@@ -1,18 +1,7 @@
 <?xml version="1.0" ?>
 <sdf version="1.8">
   <world name="default">
-    <!-- <plugin name="gazebo_no_physics_world_plugin" filename="libgazebo_no_physics_world_plugin.so"></plugin> -->
-
-    <!-- /set_entity_state isnt available in ROS2 unless added like this -->
-    <!-- For older Gazebo versions. Tested on Jade. -->
-    <!-- <plugin name="gazebo_ros_state" filename="libgazebo_ros_state.so"> 
-      <ros>
-        <namespace>/gazebo</namespace>
-      </ros>
-      <update_rate>10.0</update_rate>
-    </plugin> -->
-
-    <!-- For newer Gazebo versions. Tested on Harmonic. -->
+    <!-- Gazebo Harmonic (ros_gz_sim) -->
     <plugin filename="gz-sim-physics-system" name="gz::sim::systems::Physics" />
     <plugin filename="gz-sim-user-commands-system" name="gz::sim::systems::UserCommands" />
     <plugin filename="gz-sim-scene-broadcaster-system" name="gz::sim::systems::SceneBroadcaster" />

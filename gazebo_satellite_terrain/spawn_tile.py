@@ -13,8 +13,13 @@ class GazeboSatelliteTileSpawner(GazeboObjectSpawner):
     """
     """
 
-    def __init__(self, tile_size_meters: float, node_name: str = "TileSpawner") -> None:
-        super().__init__(node_name)
+    def __init__(
+        self,
+        tile_size_meters: float,
+        node_name: str = "TileSpawner",
+        world_name: str = "default",
+    ) -> None:
+        super().__init__(node_name=node_name, world_name=world_name)
 
         self.model_path    = os.path.join(os.environ.get("MODEL_DIR"), 'model.sdf')
         self.textures_dir  = os.path.join(os.environ.get("MODEL_DIR"), "materials", "textures")
@@ -25,17 +30,23 @@ class GazeboSatelliteTileSpawner(GazeboObjectSpawner):
 
     def spawn_tile(self, tile: Tile) -> None:
         """
-        Spawn a tile at its position in Gazebo
+        Spawn a tile at its position in Gazebo. Skips spawning if the tile was not downloaded (e.g. Mapbox 404).
         """
+        if not tile.is_downloaded:
+            self.get_logger().warn(
+                f"{self.node_name}: Skipping spawn for tile {tile.name} (not downloaded)."
+            )
+            return
+
         tile.is_spawned = True
-        
+
         pose = Pose()
         pose.position = ROSPoint(
-            x =   float(tile.pos_meters.x), 
-            y = - float(tile.pos_meters.y), # TODO: Find out why we need a minus here
+            x =   float(tile.pos_meters.x),
+            y = - float(tile.pos_meters.y),  # TODO: Find out why we need a minus here
             z = 0.0
         )
-        
+
         self.set_texture_name(texture_name = tile.name)
         self.spawn_object_gazebo(name = tile.name, xml = self.read_model_xml(self.model_path), pose = pose)
 
@@ -59,6 +70,7 @@ class GazeboSatelliteTileSpawner(GazeboObjectSpawner):
         # Make the GET request
         username = os.environ.get("MAPBOX_USERNAME")
         style_id = os.environ.get("MAPBOX_STYLENAME")
+        self.get_logger().info(f"https://api.mapbox.com/styles/v1/{username}/{style_id}/tiles/{tile.size_pixels}/{tile.zoom}/{tile.pos_coords.x}/{tile.pos_coords.y}")
         response = requests.get(
             f"https://api.mapbox.com/styles/v1/{username}/{style_id}/tiles/{tile.size_pixels}/{tile.zoom}/{tile.pos_coords.x}/{tile.pos_coords.y}",
             params = {
@@ -74,9 +86,10 @@ class GazeboSatelliteTileSpawner(GazeboObjectSpawner):
                 f.write(response.content)
 
         else:
-            message = f"{self.node_name}: Error downloading image: {response.status_code}: {response.reason}"
-            self.get_logger().info(message)
-            raise ConnectionError(message)
+            self.get_logger().warn(
+                f"{self.node_name}: Failed to download tile {tile.name} "
+                f"({response.status_code}: {response.reason}). Check .env (MAPBOX_APIKEY, MAPBOX_USERNAME, MAPBOX_STYLENAME). Skipping tile."
+            )
 
     def set_tile_model_size(self, new_size: float) -> None:
         """

@@ -40,14 +40,15 @@ Package only tested on Mac M1 using [RoboStack](https://robostack.github.io) and
     git clone https://github.com/arpg/Gazebo.git
     export GZ_SIM_RESOURCE_PATH=$GZ_SIM_RESOURCE_PATH:~/Projects/Gazebo/models
     ```
-- Install gazebo ros:
+- Install ros_gz (ROS 2 Jazzy + Gazebo Harmonic):
     ```
     sudo apt install ros-jazzy-ros-gz
     ```
-    Check that everything installed correct 
+    The launch file sets `GZ_SIM_RESOURCE_PATH` so package models are found. For extra models (e.g. sun, ground_plane), extend it (e.g. `export GZ_SIM_RESOURCE_PATH=$GZ_SIM_RESOURCE_PATH:~/Projects/Gazebo/models`).
+    Check that everything is installed correctly:
     ```
-    gz sim 
-    gz sim -r /home/dev/ros2_ws/src/gazebo_satellite_terrain/worlds/empty.world
+    gz sim
+    gz sim -r /path/to/ros2_ws/install/gazebo_satellite_terrain/share/gazebo_satellite_terrain/worlds/empty.world
     ```
 
 **Usage**

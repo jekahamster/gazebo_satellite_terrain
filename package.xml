@@ -7,6 +7,8 @@
   <maintainer email="jekahamster@gmail.com">jekahamster</maintainer>
   <license>GNU GPLv3</license>
 
+  <exec_depend>ros_gz_sim</exec_depend>
+
   <export>
     <build_type>ament_python</build_type>
   </export>

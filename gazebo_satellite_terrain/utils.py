@@ -46,7 +46,7 @@ def load_env(path: str) -> None:
         os.environ.update(vars_dict)
 
 
-def deg2tile(gps_point: GPSPoint, zoom: int) -> Coord:
+def deg2tile(gps_point: GPSPoint, zoom: int) -> Coord[int]:
     """
     Convert a GPS coordinate and zoom level to a tile coordinate.
     See: https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames#Implementations
@@ -60,7 +60,7 @@ def deg2tile(gps_point: GPSPoint, zoom: int) -> Coord:
     return Coord(xtile, ytile)
 
 
-def tile2deg(pos: Coord, zoom: int) -> GPSPoint:
+def tile2deg(pos: Coord[int], zoom: int) -> GPSPoint:
     """
     Convert a tile to a GPS coordinate
     Adding +0.5 to the tile.x and tile.y because we want the center not top left corner

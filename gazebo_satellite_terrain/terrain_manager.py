@@ -17,11 +17,11 @@ class GazeboTerrainManager(Node):
     TODO: Add a detailed explaination of what the file structure etc of the resources dir looks like.
     """
 
-    def __init__(self, odom_topic: str, approx_world_origin: tuple, zoom: int, tile_size_pixels: int, map_size: int, prefetch_terrain: bool, prespawn_terrain: bool, node_name: str = "TerrainManager") -> None:
+    def __init__(self, odom_topic: str, approx_world_origin: tuple[float, float], zoom: int, tile_size_pixels: int, map_size: int, prefetch_terrain: bool, prespawn_terrain: bool, gazebo_world_name: str = "default", node_name: str = "TerrainManager") -> None:
         """ """
         super().__init__(node_name)
         self.node_name = node_name
-        
+
         self.map = Map(
             size = map_size,
             zoom = zoom,
@@ -29,8 +29,11 @@ class GazeboTerrainManager(Node):
             origin_approx = approx_world_origin
         )
         self.get_logger().info(str(self.map))
-        
-        self.spawner = GazeboSatelliteTileSpawner(self.map.tile_size_meters)
+
+        self.spawner = GazeboSatelliteTileSpawner(
+            self.map.tile_size_meters,
+            world_name = gazebo_world_name,
+        )
 
         self.create_materials_file(self.map)
         self.init_terrain(self.map, prefetch_terrain, prespawn_terrain)
@@ -54,10 +57,16 @@ class GazeboTerrainManager(Node):
     def download_map(self, map: Map) -> None:
         """ Download the entire map """
         self.get_logger().info(f"{self.node_name}: Downloading (or getting cache of) {len(map.tiles)} tiles, please wait")
+        downloaded_count = 0
         for i in generate_spiral_modes(map.size):
+            prev_status = map.tiles[i].is_downloaded
             self.spawner.download_tile(map.tiles[i])
+            new_status = map.tiles[i].is_downloaded
+            if not prev_status and new_status:
+                downloaded_count += 1
 
         self.get_logger().info(f"{self.node_name}: Done fetching tiles")
+        self.get_logger().info(f"{self.node_name}: Downloaded {downloaded_count} new tiles, {len(map.tiles) - downloaded_count} tiles were already cached")
 
 
     def spawn_map(self, map: Map) -> None:
@@ -126,9 +135,9 @@ def main(args=None):
     parser.add_argument('--map_size',           type=int, help='How many tiles across is the map')
     parser.add_argument('--prefetch_terrain',   type=bool, default=True, help='Download all the tiles in the map at startup?')
     parser.add_argument('--prespawn_terrain',   type=bool, default=True, help='Spawn all the tiles in the map at startup?')
+    parser.add_argument('--gazebo_world_name', type=str, default='default', help='Gazebo world name for ros_gz_sim create')
     args, unknown = parser.parse_known_args(args=args)
-    
-    # Spawn object
+
     spawner = GazeboTerrainManager(
         odom_topic          = args.odom_topic,
         approx_world_origin = (args.approx_world_lat, args.approx_world_lon),
@@ -136,7 +145,8 @@ def main(args=None):
         tile_size_pixels    = args.tile_size_pixels,
         map_size            = args.map_size,
         prefetch_terrain    = args.prefetch_terrain,
-        prespawn_terrain    = args.prespawn_terrain
+        prespawn_terrain    = args.prespawn_terrain,
+        gazebo_world_name   = args.gazebo_world_name,
     )
     rclpy.spin(spawner)
 

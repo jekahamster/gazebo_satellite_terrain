@@ -35,34 +35,34 @@ def generate_launch_description():
             {'use_sim_time': True}
         ],
         arguments = [
-            '--odom_topic'      , str(config.odom_topic),
-            '--approx_world_lat', str(config.approx_origin_lat),
-            '--approx_world_lon', str(config.approx_origin_lon),
-            '--zoom'            , str(config.zoom),
-            '--tile_size_pixels', str(config.tile_size_pixels),
-            '--map_size'        , str(config.map_size),
-            '--prefetch_terrain', str(config.prefetch_terrain),
-            '--prespawn_terrain', str(config.prespawn_terrain),
+            '--odom_topic'       , str(config.odom_topic),
+            '--approx_world_lat' , str(config.approx_origin_lat),
+            '--approx_world_lon' , str(config.approx_origin_lon),
+            '--zoom'             , str(config.zoom),
+            '--tile_size_pixels' , str(config.tile_size_pixels),
+            '--map_size'         , str(config.map_size),
+            '--prefetch_terrain' , str(config.prefetch_terrain),
+            '--prespawn_terrain' , str(config.prespawn_terrain),
+            '--gazebo_world_name', str(getattr(config, 'gazebo_world_name', 'default')),
         ]
     )
     
-    # 2. Launch Gazebo
+    # 2. Launch Gazebo (ros_gz_sim for Jazzy + Harmonic)
+    world_path = os.path.join(shared_dir, config.gazebo_world_file)
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             [
-                os.path.join(get_package_share_directory('gazebo_ros'), 'launch', 'gazebo.launch.py')
+                os.path.join(get_package_share_directory('ros_gz_sim'), 'launch', 'gz_sim.launch.py')
             ]
         ),
-        launch_arguments = {
-          'world' : os.path.join(shared_dir, config.gazebo_world_file),
-        #   'verbose': "true",
-        #   'extra_gazebo_args': 'verbose'
-        }.items()
+        launch_arguments={'gz_args': world_path}.items()
     )
 
+    model_path = update_gazebo_model_path(shared_dir)
     return LaunchDescription([
-        SetEnvironmentVariable(name='GAZEBO_MODEL_PATH', value=update_gazebo_model_path(shared_dir)),   # Update the places where Gazebo looks for models, otherwise we just get untextured planes
-        SetEnvironmentVariable(name='MODEL_DIR',  value=model_dir),                                     # Make a global variable so we dont have to hardcode the package name in every Node
+        SetEnvironmentVariable(name='GZ_SIM_RESOURCE_PATH', value=model_path),
+        SetEnvironmentVariable(name='GAZEBO_MODEL_PATH', value=model_path),
+        SetEnvironmentVariable(name='MODEL_DIR', value=model_dir),
         spawn_terrain,
         gazebo,
     ])

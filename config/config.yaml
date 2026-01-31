@@ -1,6 +1,6 @@
 package_name: 'gazebo_satellite_terrain'
 
-odom_topic: /odom
+odom_topic: /odom                       # Topic to listen to for odometry data (e.g. /odom)
 zoom: 18                                # Open street map zoom level, see: https://wiki.openstreetmap.org/wiki/Zoom_levels
 approx_origin_lat: 55.74664268169444    # north-south (y-axis in gazebo). Only approximate, as we will round it to center of nearest tile
 approx_origin_lon: 12.556765912443149   # east-west   (x-axis in gazebo). Only approximate, as we will round it to center of nearest tile
@@ -8,5 +8,6 @@ tile_size_pixels: 512                   # How large are the tiles, can be seen i
 map_size: 9                             # How many tiles to make the map n x n
 prefetch_terrain: True                  # Download all terrain at start up, or spawn it under the object as it moves
 prespawn_terrain: True                  # Spawn all terrain at start up, or spawn it under the object as it moves
-gazebo_world_file: 'worlds/empty.world' # Relative to share dir
+gazebo_world_file: 'worlds/empty.world' # Relative to share dir. Example: 'worlds/empty.world' or 'worlds/my_world.world'
+gazebo_world_name: 'default'            # World name in SDF (e.g. <world name="default">). Used by ros_gz_sim create.
 model_name: 'satellite_tile'            # Shouldnt change, this is the name of directory the model is in models/satellite_tile - the name is also in the model.sdf file

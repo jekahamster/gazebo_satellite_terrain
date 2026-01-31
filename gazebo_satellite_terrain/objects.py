@@ -15,8 +15,8 @@ class Tile:
     The position of the tile can be represented by a (x,y,zoom) tuple or a GPS coordinate in the center of the tile
     or a tuple of how many meters east (x) and north (y) the tile is from the origin of the map.
     """
-    pos_coords: Coord   # The position in the OSM GPS grid - (12768, 74120) for instance
-    pos_meters: Coord   # The position of the tile (meters east and north) in the world in relation to a center of the center tile on the map
+    pos_coords: Coord[int]   # The position in the OSM GPS grid - (12768, 74120) for instance
+    pos_meters: Coord[float]  # The position of the tile (meters east and north) in the world in relation to a center of the center tile on the map
     zoom: int           # The zoom level of the OSM grid the pos is defined in
 
     size_meters: float
@@ -34,7 +34,7 @@ class Tile:
 class Map():
     """ """
     
-    def __init__(self, size: int, zoom: int, tile_size_pixels: int, origin_approx: tuple) -> None:
+    def __init__(self, size: int, zoom: int, tile_size_pixels: int, origin_approx: tuple[float, float]) -> None:
         """
         The map object represent the entire grid of tiles our world consists of.
 
@@ -51,9 +51,9 @@ class Map():
         self.size = size
         self.zoom = zoom
 
-        self.origin_approx  = Coord(origin_approx[0], origin_approx[1])
-        self.origin_gps     = tile2deg(deg2tile(GPSPoint(origin_approx), self.zoom), self.zoom)
-        self.origin_coord   = deg2tile(self.origin_gps, self.zoom)
+        self.origin_approx = Coord[float](origin_approx[0], origin_approx[1])
+        self.origin_gps: GPSPoint = tile2deg(deg2tile(GPSPoint(origin_approx), self.zoom), self.zoom) # Convert current GPS to tile related GPS coordinate
+        self.origin_coord: Coord[int] = deg2tile(self.origin_gps, self.zoom) # Convert GPS coordinate (float, float) to tile coordinate (int, int)
 
         self.tile_size_pixels = tile_size_pixels
         self.tile_size_meters = self.tile_size_pixels * meters_per_pixel(self.tile_size_pixels, self.origin_gps.latitude, self.zoom)
@@ -86,7 +86,7 @@ class Map():
         return self.size // 2
 
 
-    def tile_at_pos(self, pos: Coord, throws: bool = False) -> Tile | None:
+    def tile_at_pos(self, pos: Coord[float], throws: bool = False) -> Tile | None:
         """ Return the tile at a number of meteres in x and y direction relative to the world origin"""
         # Move east (+x direction)
         east = distance(meters=abs(pos.x)).destination(point=self.origin_gps, bearing=90 if 0 < pos.x else 270)
@@ -102,7 +102,7 @@ class Map():
         return self.tile_at_index(global_tile_pos, throws)
 
 
-    def tile_at_index(self, pos: Coord, throws: bool = False) -> Tile | None:
+    def tile_at_index(self, pos: Coord[int], throws: bool = False) -> Tile | None:
         """ Take a tile in global OSM frame and return the tile from our map"""
         relative_pos = self.origin_coord - pos + self.half_size  # center to our map and 'roll' so 0,0 is the center of our map
 
