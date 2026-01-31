@@ -3,6 +3,9 @@ docs/site/
 /data/
 /models/
 
+# runtime: temporary SDFs for tile spawning (clean with: rm -rf …/spawn_temp)
+spawn_temp/
+
 # test cache
 manual_test/
 

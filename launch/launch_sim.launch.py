@@ -64,10 +64,11 @@ def generate_launch_description():
         SetEnvironmentVariable(name='GAZEBO_MODEL_PATH', value=model_path),
         SetEnvironmentVariable(name='MODEL_DIR', value=model_dir),
         gazebo,
-        TimerAction(
-            period=5.0,
-            actions=[spawn_terrain],
-        ),
+        spawn_terrain,
+        # TimerAction(
+        #     period=5.0,
+        #     actions=[spawn_terrain],
+        # ),
     ])
 
 
