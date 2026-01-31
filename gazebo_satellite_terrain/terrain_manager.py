@@ -29,7 +29,6 @@ class GazeboTerrainManager(Node):
             origin_approx = approx_world_origin
         )
         self.get_logger().info(str(self.map))
-
         self.spawner = GazeboSatelliteTileSpawner(
             self.map.tile_size_meters,
             world_name = gazebo_world_name,
@@ -57,16 +56,14 @@ class GazeboTerrainManager(Node):
     def download_map(self, map: Map) -> None:
         """ Download the entire map """
         self.get_logger().info(f"{self.node_name}: Downloading (or getting cache of) {len(map.tiles)} tiles, please wait")
-        downloaded_count = 0
+        new_downloaded_count = 0
+        already_downloaded_count = 0
         for i in generate_spiral_modes(map.size):
-            prev_status = map.tiles[i].is_downloaded
-            self.spawner.download_tile(map.tiles[i])
-            new_status = map.tiles[i].is_downloaded
-            if not prev_status and new_status:
-                downloaded_count += 1
-
+            result = self.spawner.download_tile(map.tiles[i])
+            new_downloaded_count += int(result["is_downloaded"] and not result["already_downloaded"])
+            already_downloaded_count += int(result["already_downloaded"])
         self.get_logger().info(f"{self.node_name}: Done fetching tiles")
-        self.get_logger().info(f"{self.node_name}: Downloaded {downloaded_count} new tiles, {len(map.tiles) - downloaded_count} tiles were already cached")
+        self.get_logger().info(f"{self.node_name}: New downloaded count: {new_downloaded_count}, Already: {already_downloaded_count}, Not downloaded: {len(map.tiles) - new_downloaded_count - already_downloaded_count}")
 
 
     def spawn_map(self, map: Map) -> None:

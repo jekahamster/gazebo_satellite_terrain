@@ -51,7 +51,7 @@ class GazeboSatelliteTileSpawner(GazeboObjectSpawner):
         self.spawn_object_gazebo(name=tile.name, pose=pose, file_path=self.model_path)
 
 
-    def download_tile(self, tile: Tile, verbose: bool = False) -> None:
+    def download_tile(self, tile: Tile, verbose: bool = False) -> dict:
         """
         Download a single tile from the mapbox static tile API (See: https://docs.mapbox.com/api/maps/static-tiles/) 
         Set your API-key, username and style in a .env file. Also not this could be used to download 'styled' terrain.
@@ -65,7 +65,7 @@ class GazeboSatelliteTileSpawner(GazeboObjectSpawner):
             tile.is_downloaded = True
             if verbose:
                 self.get_logger().info(f"{self.node_name}: Tile '{tile.name}' has already been downloaded.")
-            return
+            return {"is_downloaded": True, "already_downloaded": True}
 
         # Make the GET request
         username = os.environ.get("MAPBOX_USERNAME")
@@ -85,11 +85,14 @@ class GazeboSatelliteTileSpawner(GazeboObjectSpawner):
             with open(tile.texture_path, "wb") as f:
                 f.write(response.content)
 
+            return {"is_downloaded": True, "already_downloaded": False}
+
         else:
             self.get_logger().warn(
                 f"{self.node_name}: Failed to download tile {tile.name} "
                 f"({response.status_code}: {response.reason}). Check .env (MAPBOX_APIKEY, MAPBOX_USERNAME, MAPBOX_STYLENAME). Skipping tile."
             )
+            return {"is_downloaded": False, "already_downloaded": False}
 
     def set_tile_model_size(self, new_size: float) -> None:
         """

@@ -2,7 +2,7 @@ import os
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription, SetEnvironmentVariable
+from launch.actions import IncludeLaunchDescription, SetEnvironmentVariable, TimerAction
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
 
@@ -63,8 +63,11 @@ def generate_launch_description():
         SetEnvironmentVariable(name='GZ_SIM_RESOURCE_PATH', value=model_path),
         SetEnvironmentVariable(name='GAZEBO_MODEL_PATH', value=model_path),
         SetEnvironmentVariable(name='MODEL_DIR', value=model_dir),
-        spawn_terrain,
         gazebo,
+        TimerAction(
+            period=5.0,
+            actions=[spawn_terrain],
+        ),
     ])
 
 

@@ -73,6 +73,7 @@ class GazeboObjectSpawner(Node):
                 "-z", str(pose.position.z),
                 "-R", "0", "-P", "0", "-Y", "0",
             ]
+            self.get_logger().info(f"{self.node_name}: Spawning from file: {file_path}")
         elif xml is not None:
             cmd = [
                 "ros2", "run", "ros_gz_sim", "create",
@@ -84,6 +85,7 @@ class GazeboObjectSpawner(Node):
                 "-z", str(pose.position.z),
                 "-R", "0", "-P", "0", "-Y", "0",
             ]
+            self.get_logger().info(f"{self.node_name}: Spawning from XML string")
         else:
             self.get_logger().warn(f"{self.node_name}: spawn_object_gazebo needs xml or file_path")
             return False

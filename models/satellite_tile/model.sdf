@@ -36,7 +36,7 @@
           <pbr>
             <metal>
               <!-- Overwritten by spawn_tile.py to materials/textures/<tile_name>.jpeg -->
-              <albedo_map>materials/textures/tile_140211_81958.jpeg</albedo_map>
+              <albedo_map>materials/textures/tile_140211_81962.jpeg</albedo_map>
               <roughness>0.6</roughness>
               <metalness>0</metalness>
             </metal>
