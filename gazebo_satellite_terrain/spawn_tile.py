@@ -137,24 +137,26 @@ class GazeboSatelliteTileSpawner(GazeboObjectSpawner):
 
     def _prepare_tile_dir_and_sdf(self, texture_name: str) -> tuple[str, str]:
         """
-        Create spawn_temp/tile_<name>/ with model.sdf and materials/textures/tile_<name>.jpeg.
-        Texture is symlinked from the shared textures_dir (no copy). SDF uses relative path for albedo_map.
+        Create spawn_temp/<texture_name>/ with model.sdf and materials/textures/<texture_name>.jpeg.
+        texture_name is already like "tile_140215_81958" (from Tile.name). Texture is symlinked
+        from the shared textures_dir (no copy). SDF uses relative path for albedo_map.
         Returns (path to model.sdf, path to tile dir for later cleanup).
         """
-        tile_dir_name = f"tile_{texture_name}"
-        tile_dir = os.path.join(self.spawn_temp_dir, tile_dir_name)
+        tile_dir = os.path.join(self.spawn_temp_dir, texture_name)
         textures_sub = os.path.join(tile_dir, "materials", "textures")
         os.makedirs(textures_sub, exist_ok=True)
 
         src_texture = os.path.abspath(os.path.join(self.textures_dir, f"{texture_name}.jpeg"))
-        dst_texture = os.path.join(textures_sub, f"tile_{texture_name}.jpeg")
+        dst_texture = os.path.join(textures_sub, f"{texture_name}.jpeg")
+        if os.path.lexists(dst_texture):
+            os.unlink(dst_texture)
         try:
             os.symlink(src_texture, dst_texture)
         except OSError:
             shutil.copy2(src_texture, dst_texture)
 
         # Write model.sdf with relative path (forward slash for SDF)
-        albedo_path = f"materials/textures/tile_{texture_name}.jpeg"
+        albedo_path = f"materials/textures/{texture_name}.jpeg"
         parser = ET.XMLParser(target=ET.TreeBuilder(insert_comments=True))
         tree = ET.parse(self.model_path, parser=parser)
         for elem in tree.getroot().findall(".//albedo_map"):
