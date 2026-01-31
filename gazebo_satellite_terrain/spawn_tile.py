@@ -47,8 +47,8 @@ class GazeboSatelliteTileSpawner(GazeboObjectSpawner):
             z = 0.0
         )
 
-        self.set_texture_name(texture_name = tile.name)
-        self.spawn_object_gazebo(name = tile.name, xml = self.read_model_xml(self.model_path), pose = pose)
+        self.set_texture_name(texture_name=tile.name)
+        self.spawn_object_gazebo(name=tile.name, pose=pose, file_path=self.model_path)
 
 
     def download_tile(self, tile: Tile, verbose: bool = False) -> None:
@@ -110,15 +110,14 @@ class GazeboSatelliteTileSpawner(GazeboObjectSpawner):
 
     def set_texture_name(self, texture_name: str) -> None:
         """
-        Every time we spawn a tile we need to update what texture we are pointing to in the `model.sdf`, that way we keep spawning the same model but differently textured.
-        Will be a name 'tile_x_y'. If the texture doesn't exist a error texture is shown
+        Set the PBR albedo_map path in model.sdf so this spawn uses the right texture.
+        Path is relative to the model directory (works when spawning with -file).
         """
         parser = ET.XMLParser(target=ET.TreeBuilder(insert_comments=True))
         tree = ET.parse(self.model_path, parser=parser)
-        
-        # Update the texture
-        for size_element in tree.getroot().findall(".//name"):
-            size_element.text = texture_name
 
-        # Save the updated file
+        albedo_path = f"materials/textures/{texture_name}.jpeg"
+        for elem in tree.getroot().findall(".//albedo_map"):
+            elem.text = albedo_path
+
         tree.write(self.model_path, encoding='utf-8', xml_declaration=True) 

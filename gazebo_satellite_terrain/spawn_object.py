@@ -32,19 +32,28 @@ class GazeboObjectSpawner(Node):
             return g.read()
 
     def spawn_object_gazebo(
-        self, name: str, xml: str, pose: Pose = Pose(), verbose: bool = False
+        self,
+        name: str,
+        pose: Pose = Pose(),
+        *,
+        xml: str | None = None,
+        file_path: str | None = None,
+        verbose: bool = False,
     ) -> bool:
         """
-        Spawn an object into Gazebo given xml and a pose via ros_gz_sim create.
+        Spawn an object into Gazebo via ros_gz_sim create.
+        Use file_path so model-relative paths (e.g. PBR albedo_map) resolve correctly.
 
         Parameters
         ----------
         name : str
             Name of the object to be spawned.
-        xml : str
-            XML/SDF description of the object.
         pose : geometry_msgs.msg.Pose
             Position and orientation of object.
+        xml : str, optional
+            XML/SDF string (used if file_path is not set).
+        file_path : str, optional
+            Path to model.sdf; when set, use -file so materials resolve from model dir.
         verbose : bool
             Whether to log success.
 
@@ -53,16 +62,31 @@ class GazeboObjectSpawner(Node):
         bool
             True if spawn succeeded, False otherwise.
         """
-        cmd = [
-            "ros2", "run", "ros_gz_sim", "create",
-            "-world", self.world_name,
-            "-string", xml,
-            "-name", name,
-            "-x", str(pose.position.x),
-            "-y", str(pose.position.y),
-            "-z", str(pose.position.z),
-            "-R", "0", "-P", "0", "-Y", "0",
-        ]
+        if file_path is not None:
+            cmd = [
+                "ros2", "run", "ros_gz_sim", "create",
+                "-world", self.world_name,
+                "-file", os.path.abspath(file_path),
+                "-name", name,
+                "-x", str(pose.position.x),
+                "-y", str(pose.position.y),
+                "-z", str(pose.position.z),
+                "-R", "0", "-P", "0", "-Y", "0",
+            ]
+        elif xml is not None:
+            cmd = [
+                "ros2", "run", "ros_gz_sim", "create",
+                "-world", self.world_name,
+                "-string", xml,
+                "-name", name,
+                "-x", str(pose.position.x),
+                "-y", str(pose.position.y),
+                "-z", str(pose.position.z),
+                "-R", "0", "-P", "0", "-Y", "0",
+            ]
+        else:
+            self.get_logger().warn(f"{self.node_name}: spawn_object_gazebo needs xml or file_path")
+            return False
         try:
             result = subprocess.run(
                 cmd,

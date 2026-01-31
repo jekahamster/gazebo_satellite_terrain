@@ -1,13 +1,13 @@
 <?xml version='1.0' encoding='utf-8'?>
-<sdf version="1.4">
-<model name="satellite_tile">
-  <static>true</static>
+<sdf version="1.9">
+  <model name="satellite_tile">
+    <static>true</static>
     <link name="base_link">
       <collision name="collision">
         <geometry>
           <plane>
             <normal>0 0 1</normal>
-            <!-- Will be overwritten by `spawn_tile.py` -->
+            <!-- Overwritten by spawn_tile.py -->
             <size>86.0452735119044 86.0452735119044</size>
           </plane>
         </geometry>
@@ -25,17 +25,22 @@
         <geometry>
           <plane>
             <normal>0 0 1</normal>
-            <!-- Will be overwritten by `spawn_tile.py` -->
+            <!-- Overwritten by spawn_tile.py -->
             <size>86.0452735119044 86.0452735119044</size>
           </plane>
         </geometry>
         <material>
-            <script>
-                <uri>model://satellite_tile/materials/scripts</uri>
-                <uri>model://satellite_tile/materials/textures</uri>
-                <!-- Will be overwritten by `spawn_tile.py` -->
-                <name>tile_140215_81956</name> 
-            </script>
+          <ambient>0.8 0.8 0.8 1</ambient>
+          <diffuse>0.8 0.8 0.8 1</diffuse>
+          <specular>0.1 0.1 0.1 1</specular>
+          <pbr>
+            <metal>
+              <!-- Overwritten by spawn_tile.py to materials/textures/<tile_name>.jpeg -->
+              <albedo_map>materials/textures/tile_140211_81958.jpeg</albedo_map>
+              <roughness>0.6</roughness>
+              <metalness>0</metalness>
+            </metal>
+          </pbr>
         </material>
       </visual>
     </link>
